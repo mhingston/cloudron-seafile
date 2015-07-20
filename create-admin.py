@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+# !!!!!!!!!!!!!!!!!
+# This file is mostly taken from seahub-admin.py but takes info as arguments rather interactively
+# !!!!!!!!!!!!!!!!!
+
 import sqlite3
 import os
 import sys
