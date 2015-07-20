@@ -25,6 +25,7 @@ RUN mv ${TARBALL} installed
 
 EXPOSE 8000
 
+ADD create-admin.py /app/code/create-admin.py
 ADD start.sh /app/code/start.sh
 
 CMD [ "/app/code/start.sh" ]
