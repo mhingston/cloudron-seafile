@@ -1,0 +1,29 @@
+{
+  "id": "com.seafile.cloudronapp",
+  "title": "Seafile",
+  "author": "Seafile Developers",
+  "description": "Storage for your teams and organizations",
+  "tagline": "Storage for your teams and organizations",
+  "version": "0.0.1",
+  "healthCheckPath": "/",
+  "httpPort": 8000,
+  "addons": {
+    "mysql": {},
+    "sendmail": {},
+    "localstorage": {},
+    "ldap": {}
+  },
+  "tcpPorts": {
+    "SSH_PORT": {
+      "title": "SSH Port",
+      "description": "SSH Port over which repos can be pushed & pulled",
+      "defaultValue": 29418
+    }
+  },
+  "minBoxVersion": "0.0.1",
+  "manifestVersion": 1,
+  "website": "https://www.seafile.com",
+  "contactEmail": "support@cloudron.io",
+  "icon": "logo.png",
+  "mediaLinks": []
+}
