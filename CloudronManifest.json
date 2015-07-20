@@ -14,10 +14,20 @@
     "ldap": {}
   },
   "tcpPorts": {
-    "SSH_PORT": {
-      "title": "SSH Port",
-      "description": "SSH Port over which repos can be pushed & pulled",
-      "defaultValue": 29418
+    "CCNET_SERVER_PORT": {
+      "title": "CCNET Server Port",
+      "description": "Port for the underlying networking server",
+      "defaultValue": 10001
+    },
+    "SEAFILE_SERVER_PORT": {
+      "title": "Seafile Server Port",
+      "description": "Port for seafile main server",
+      "defaultValue": 12001
+    },
+    "SEAFILE_FILESERVER_PORT": {
+      "title": "Seafile Fileserver Port",
+      "description": "Port for the seafile file server",
+      "defaultValue": 8082
     }
   },
   "minBoxVersion": "0.0.1",
