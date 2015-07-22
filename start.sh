@@ -2,6 +2,8 @@
 
 set -eu -o pipefail
 
+echo "==============="
+
 fqdn=$(hostname -f)
 
 VERSION="4.2.1"
@@ -17,7 +19,10 @@ if [[ -z "$(ls -A /app/data)" ]]; then
     # copy over the whole app for now as seafile wants to have the configs in ../ of the code
     cp -rf "/app/code/seafile-server-${VERSION}" "/app/data"
 
+    echo "run ccnet-init"
     LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/ccnet-init --config-dir ${CCNET_CONFIG_DIR} --name "Seafile" --host ${fqdn} --port 10001
+
+    echo "run seaf-server-init"
     LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/seaf-server-init --seafile-dir ${SEAFILE_DATA_DIR} --port 12001 --fileserver-port 8082
 
     # Write seafile.ini
@@ -38,6 +43,7 @@ EOF
     echo "SECRET_KEY = \"$(python2 ${INSTALL_PATH}/seahub/tools/secret_key_generator.py)\"" >> /app/data/seahub_settings.py
 
     # init db
+    echo "init the database"
     sqlite3 "/app/data/seahub.db" ".read ${INSTALL_PATH}/seahub/sql/sqlite3.sql"
 
     # setup avatars
@@ -48,14 +54,45 @@ EOF
     # link latest seafile into data for provide the recommended folder structure
     ln -s ${INSTALL_PATH} /app/data/seafile-server-latest
 
+
+    # run it the first time to setup db
+    cd "/app/data/seafile-server-latest"
+
+    echo "Start seafile to setup the database"
+    ./seafile.sh start
+    echo "Done"
+
+    # setup admin
+    echo "Setup admin"
     python2 /app/code/create-admin.py ${CCNET_CONFIG_DIR} "admin@cloudron.io" "password"
+    echo "Done"
+
+    echo "Stop seafile to finalized the initial setup"
+    ./seafile.sh stop
+    echo "Done"
+
+    # add ldap
+cat >> "${CCNET_CONFIG_DIR}/ccnet.conf" <<EOF
+
+[LDAP]
+HOST = ldap://${LDAP_SERVER}:${LDAP_PORT}
+BASE = ${LDAP_USERS_BASE_DN}
+LOGIN_ATTR = mail
+EOF
+
 fi
 
-## TODO update fqdn and the likes
+## TODO update fqdn, ldap and the likes
 
 cd "/app/data/seafile-server-latest"
 
+echo "Start seafile"
 ./seafile.sh start
-./seahub.sh start
+echo "Done"
 
-wait
+echo "Start seahub"
+./seahub.sh start
+echo "Done"
+
+# this will just sit there and wait ;-)
+read
