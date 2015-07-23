@@ -16,11 +16,11 @@ CCNET_CONFIG_DIR="/app/data/ccnet"
 
 # first run
 if [[ -z "$(ls -A /app/data)" ]]; then
-    # copy over the whole app for now as seafile wants to have the configs in ../ of the code
-    cp -rf "/app/code/seafile-server-${VERSION}" "/app/data"
+    # copy the code to /app/data/seafile-server-4.2.1 to have the same folder structure as recommended http://manual.seafile.com/deploy/using_sqlite.html
+    cp -rf "/app/code/seafile-server-${VERSION}" ${INSTALL_PATH}
 
     echo "run ccnet-init"
-    LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/ccnet-init --config-dir ${CCNET_CONFIG_DIR} --name "Seafile" --host ${fqdn} --port 10001
+    LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/ccnet-init --config-dir ${CCNET_CONFIG_DIR} --name "Seafile" --host "https://${fqdn}" --port 10001
 
     echo "run seaf-server-init"
     LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/seaf-server-init --seafile-dir ${SEAFILE_DATA_DIR} --port 12001 --fileserver-port 8082
@@ -84,7 +84,7 @@ fi
 
 ## TODO update fqdn, ldap and the likes
 
-cd "/app/data/seafile-server-latest"
+cd "${INSTALL_PATH}"
 
 echo "Start seafile"
 ./seafile.sh start

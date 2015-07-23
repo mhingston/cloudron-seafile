@@ -9,8 +9,6 @@ WORKDIR /app/code
 
 ENV VERSION="4.2.1"
 ENV TARBALL="seafile-server_${VERSION}_x86-64.tar.gz"
-ENV INSTALL_PATH="/app/code/seafile-server-${VERSION}"
-ENV SEAFILE_LD_LIBRARY_PATH="${INSTALL_PATH}/seafile/lib/:${INSTALL_PATH}/seafile/lib64:${LD_LIBRARY_PATH}"
 ENV SEAFILE_DATA_DIR="/app/data/seafile-data"
 ENV SEAHUB_DATA_DIR="/app/data/seahub-data"
 
@@ -24,6 +22,10 @@ RUN mkdir installed
 RUN mv ${TARBALL} installed
 
 EXPOSE 8000
+
+# seafile.sh and seahub.sh want the data folders to be ../ from the code
+# RUN sed -i "s/TOPDIR=.*/TOPDIR=\/app\/data\//" "/app/code/seafile-server-${VERSION}/seafile.sh"
+# RUN sed -i "s/TOPDIR=.*/TOPDIR=\/app\/data\//" "/app/code/seafile-server-${VERSION}/seahub.sh"
 
 ADD create-admin.py /app/code/create-admin.py
 ADD start.sh /app/code/start.sh
