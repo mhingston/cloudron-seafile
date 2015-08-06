@@ -14,8 +14,6 @@ SEAFILE_DATA_DIR="/app/data/seafile-data"
 SEAHUB_DATA_DIR="/app/data/seahub-data"
 CCNET_CONFIG_DIR="/app/data/ccnet"
 
-rm -rf /app/data/*
-
 # first run
 if [[ -z "$(ls -A /app/data)" ]]; then
     # copy the code to /app/data/seafile-server-4.2.1 to have the same folder structure as recommended http://manual.seafile.com/deploy/using_sqlite.html
