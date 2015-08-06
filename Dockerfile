@@ -2,7 +2,7 @@ FROM cloudron/base:0.3.0
 MAINTAINER Seafile Developers <support@cloudron.io>
 
 RUN apt-get update
-RUN apt-get install -y python2.7 python-setuptools python-imaging python-mysqldb sqlite3
+RUN apt-get install -y python2.7 python-setuptools python-imaging python-mysqldb python-flup sqlite3
 
 RUN mkdir -p /app/code
 WORKDIR /app/code
@@ -28,6 +28,7 @@ EXPOSE 8000
 # RUN sed -i "s/TOPDIR=.*/TOPDIR=\/app\/data\//" "/app/code/seafile-server-${VERSION}/seahub.sh"
 
 ADD create-admin.py /app/code/create-admin.py
+ADD seafile.conf.template /app/code/seafile.conf.template
 ADD start.sh /app/code/start.sh
 
 CMD [ "/app/code/start.sh" ]
