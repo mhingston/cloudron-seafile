@@ -81,17 +81,20 @@ EOF
 fi
 
 # regenerate the nginx config
+echo "Update nginx config"
 cp /app/code/seafile.conf.template /etc/nginx/sites-available/default
 sed -e "s/##HOSTNAME##/${HOSTNAME}/" -i /etc/nginx/sites-available/default
 
 # update ccnet config
+echo "Update ccnet config"
 sed -e "s/SERVICE_URL = .*/SERVICE_URL = https:\/\/${HOSTNAME}/" \
-    -e "s/HOST = ldap:\/\/.*/HOST = ldap://${LDAP_SERVER}:${LDAP_PORT}/" \
+    -e "s/HOST = ldap:\/\/.*/HOST = ldap:\/\/${LDAP_SERVER}:${LDAP_PORT}/" \
     -e "s/BASE = .*/BASE = ${LDAP_USERS_BASE_DN}/" \
     -i "${CCNET_CONFIG_DIR}/ccnet.conf"
 
 # update seahub_settings
-sed -e "s/FILE_SERVER_ROOT = .*/\"FILE_SERVER_ROOT = https:\/\/${HOSTNAME}\/seafhttp\"/" -i /app/data/seahub_settings.py
+echo "Update seahub_settings.py"
+sed -e "s/FILE_SERVER_ROOT = .*/FILE_SERVER_ROOT = \"https:\/\/${HOSTNAME}\/seafhttp\"/" -i /app/data/seahub_settings.py
 
 cd "${INSTALL_PATH}"
 
