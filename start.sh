@@ -37,7 +37,7 @@ host = 0.0.0.0
 share_name = /
 EOF
 
-    # generate seahub/settings.py
+    # generate seahub_settings.py
     echo "SECRET_KEY = \"$(python2 ${INSTALL_PATH}/seahub/tools/secret_key_generator.py)\"" >> /app/data/seahub_settings.py
     echo "FILE_SERVER_ROOT = \"https://${HOSTNAME}/seafhttp\"" >> /app/data/seahub_settings.py
 
@@ -90,6 +90,8 @@ sed -e "s/SERVICE_URL = .*/SERVICE_URL = https:\/\/${HOSTNAME}/" \
     -e "s/BASE = .*/BASE = ${LDAP_USERS_BASE_DN}/" \
     -i "${CCNET_CONFIG_DIR}/ccnet.conf"
 
+# update seahub_settings
+sed -e "s/FILE_SERVER_ROOT = .*/\"FILE_SERVER_ROOT = https:\/\/${HOSTNAME}\/seafhttp\"/" -i /app/data/seahub_settings.py
 
 cd "${INSTALL_PATH}"
 
