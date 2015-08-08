@@ -8,28 +8,11 @@
   "healthCheckPath": "/",
   "httpPort": 8000,
   "addons": {
-    "mysql": {},
     "sendmail": {},
     "localstorage": {},
     "ldap": {}
   },
-  "tcpPorts": {
-    "CCNET_SERVER_PORT": {
-      "title": "CCNET Server Port",
-      "description": "Port for the underlying networking server",
-      "defaultValue": 10001
-    },
-    "SEAFILE_SERVER_PORT": {
-      "title": "Seafile Server Port",
-      "description": "Port for seafile main server",
-      "defaultValue": 12001
-    },
-    "SEAFILE_FILESERVER_PORT": {
-      "title": "Seafile Fileserver Port",
-      "description": "Port for the seafile file server",
-      "defaultValue": 8082
-    }
-  },
+  "tcpPorts": {},
   "minBoxVersion": "0.0.1",
   "manifestVersion": 1,
   "website": "https://www.seafile.com",
