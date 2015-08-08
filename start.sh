@@ -4,8 +4,6 @@ set -eu -o pipefail
 
 echo "==============="
 
-fqdn=$(hostname -f)
-
 VERSION="4.2.1"
 TARBALL="seafile-server_${VERSION}_x86-64.tar.gz"
 INSTALL_PATH="/app/data/seafile-server-${VERSION}"
@@ -20,7 +18,7 @@ if [[ -z "$(ls -A /app/data)" ]]; then
     cp -rf "/app/code/seafile-server-${VERSION}" ${INSTALL_PATH}
 
     echo "run ccnet-init"
-    LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/ccnet-init --config-dir ${CCNET_CONFIG_DIR} --name "Seafile" --host "${fqdn}" --port 10001
+    LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/ccnet-init --config-dir ${CCNET_CONFIG_DIR} --name "Seafile" --host "${HOSTNAME}" --port 10001
 
     echo "run seaf-server-init"
     LD_LIBRARY_PATH=${SEAFILE_LD_LIBRARY_PATH} ${INSTALL_PATH}/seafile/bin/seaf-server-init --seafile-dir ${SEAFILE_DATA_DIR} --port 12001 --fileserver-port 8082
@@ -41,7 +39,7 @@ EOF
 
     # generate seahub/settings.py
     echo "SECRET_KEY = \"$(python2 ${INSTALL_PATH}/seahub/tools/secret_key_generator.py)\"" >> /app/data/seahub_settings.py
-    echo "FILE_SERVER_ROOT = \"https://${fqdn}/seafhttp\"" >> /app/data/seahub_settings.py
+    echo "FILE_SERVER_ROOT = \"https://${HOSTNAME}/seafhttp\"" >> /app/data/seahub_settings.py
 
     # init db
     echo "init the database"
@@ -54,7 +52,6 @@ EOF
 
     # link latest seafile into data for provide the recommended folder structure
     ln -s ${INSTALL_PATH} /app/data/seafile-server-latest
-
 
     # run it the first time to setup db
     cd "/app/data/seafile-server-latest"
@@ -87,9 +84,12 @@ fi
 cp /app/code/seafile.conf.template /etc/nginx/sites-available/default
 sed -e "s/##HOSTNAME##/${HOSTNAME}/" -i /etc/nginx/sites-available/default
 
-sed -e "s/SERVICE_URL = .*/SERVICE_URL = https:\/\/${HOSTNAME}/" -i /app/data/ccnet/ccnet.conf
+# update ccnet config
+sed -e "s/SERVICE_URL = .*/SERVICE_URL = https:\/\/${HOSTNAME}/" \
+    -e "s/HOST = ldap:\/\/.*/HOST = ldap://${LDAP_SERVER}:${LDAP_PORT}/" \
+    -e "s/BASE = .*/BASE = ${LDAP_USERS_BASE_DN}/" \
+    -i "${CCNET_CONFIG_DIR}/ccnet.conf"
 
-## TODO update fqdn, ldap and the likes
 
 cd "${INSTALL_PATH}"
 
@@ -105,5 +105,5 @@ echo "Start nginx"
 service nginx start
 echo "Done"
 
-# this will just sit there and wait ;-)
+# this will just sit there and wait
 read
