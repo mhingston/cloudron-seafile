@@ -2,9 +2,9 @@
   "id": "com.seafile.cloudronapp",
   "title": "Seafile",
   "author": "Seafile Developers",
-  "description": "Storage for your teams and organizations",
+  "description": "file://DESCRIPTION.md",
   "tagline": "Storage for your teams and organizations",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "healthCheckPath": "/",
   "httpPort": 8000,
   "addons": {
