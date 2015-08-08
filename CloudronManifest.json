@@ -18,5 +18,7 @@
   "website": "https://www.seafile.com",
   "contactEmail": "support@cloudron.io",
   "icon": "logo.png",
-  "mediaLinks": []
+  "mediaLinks": [
+    "https://i.imgur.com/SiBB8xa.png"
+  ]
 }
