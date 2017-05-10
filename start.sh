@@ -7,7 +7,7 @@ cd /app/code/seafile-server-latest
 read
 
 # first run
-if ! [ -e  /app/data/data ]; then
+if ! [ -e  /app/data ]; then
     echo "=> First run create /app/data"
     mkdir -p /app/data
 
