@@ -3,10 +3,11 @@
 SCRIPT=$(readlink -f "$0")
 INSTALLPATH=$(dirname "${SCRIPT}")
 TOPDIR=$(dirname "${INSTALLPATH}")
-default_ccnet_conf_dir=${TOPDIR}/ccnet
-default_seafile_data_dir=${TOPDIR}/seafile-data
-default_seahub_db=${TOPDIR}/seahub.db
-default_conf_dir=${TOPDIR}/conf
+DATADIR=/app/data
+default_ccnet_conf_dir=${DATADIR}/ccnet
+default_seafile_data_dir=${DATADIR}/seafile-data
+default_seahub_db=${DATADIR}/seahub.db
+default_conf_dir=${DATADIR}/conf
 
 export SEAFILE_LD_LIBRARY_PATH=${INSTALLPATH}/seafile/lib/:${INSTALLPATH}/seafile/lib64:${LD_LIBRARY_PATH}
 
@@ -35,18 +36,18 @@ function err_and_quit () {
 }
 
 function on_ctrl_c_pressed () {
-    printf "\n\n\033[33mYou have pressed Ctrl-C. Setup is interrupted.\033[m\n\n"
+    printf "\n\n\033[33mYou have pressed Ctrl-C. Setup is interrupted.\033[m\n\n" 
     exit 1;
 }
 
-# clean newly created ccnet/seafile configs when exit on SIGINT
+# clean newly created ccnet/seafile configs when exit on SIGINT 
 trap on_ctrl_c_pressed 2
 
 function check_sanity () {
     if ! [[ -d ${INSTALLPATH}/seahub && -d ${INSTALLPATH}/seafile \
         && -d ${INSTALLPATH}/runtime ]]; then
         echo
-        echo "The seafile-server diretory doesn't contain all needed files."
+        echo "The seafile-server diretory doesn't contain all needed files."    
         echo "Please make sure you have extracted all files and folders from tarball."
         err_and_quit;
     fi
@@ -81,7 +82,7 @@ function check_existing_ccnet () {
             exit 1;
         else
             echo
-            echo "Existing ccnet configuration is being used."
+            echo "Existing ccnet configuration is being used." 
             use_existing_ccnet=true
         fi
     fi
@@ -111,10 +112,10 @@ function check_python_executable() {
 }
 
 function check_python_module () {
-    module=$1
+    module=$1 
     name=$2
     hint=$3
-    printf "  Checking python module: ${name} ... "
+    printf "  Checking python module: ${name} ... " 
     if ! $PYTHON -c "import ${module}" 2>/dev/null 1>&2; then
         echo
         printf "\033[33m ${name} \033[m is not installed, Please install it first.\n"
@@ -139,7 +140,7 @@ function check_python () {
             echo "Python 3.x is not supported. Please use python 2.x."
             err_and_quit;
         fi
-
+        
         if [[ $PYTHON == "python2.6" ]]; then
             py26="2.6"
         fi
@@ -182,7 +183,7 @@ function ask_question () {
         printf "[${key}]: "
     fi
 }
-
+    
 function get_server_name () {
     question="What would you like to use as the name of this seafile server?\nYour seafile users will be able to see the name in their seafile client."
     hint="You can use a-z, A-Z, 0-9, _ and -, and the length should be 3 ~ 15"
@@ -200,7 +201,7 @@ function get_server_name () {
 }
 
 function get_server_ip_or_domain () {
-    question="What is the ip or domain of this server?\nFor example, www.mycompany.com, or, 192.168.1.101"
+    question="What is the ip or domain of this server?\nFor example, www.mycompany.com, or, 192.168.1.101" 
     ask_question "${question}\n" "nodefault" "This server's ip or domain"
     read ip_or_domain
     if [[ "${ip_or_domain}" == "" ]]; then
@@ -212,7 +213,7 @@ function get_server_ip_or_domain () {
 }
 
 function get_ccnet_server_port () {
-    question="What tcp port do you want to use for ccnet server?"
+    question="What tcp port do you want to use for ccnet server?" 
     hint="10001 is the recommended port."
     default="10001"
     ask_question "${question}\n${hint}" "${default}"
@@ -228,7 +229,7 @@ function get_ccnet_server_port () {
 }
 
 function get_seafile_server_port () {
-    question="What tcp port would you like to use for seafile server?"
+    question="What tcp port would you like to use for seafile server?" 
     hint="12001 is the recommended port."
     default="12001"
     ask_question "${question}\n${hint}" "${default}"
@@ -244,7 +245,7 @@ function get_seafile_server_port () {
 }
 
 function get_fileserver_port () {
-    question="What tcp port do you want to use for seafile fileserver?"
+    question="What tcp port do you want to use for seafile fileserver?" 
     hint="8082 is the recommended port."
     default="8082"
     ask_question "${question}\n${hint}" "${default}"
@@ -262,7 +263,7 @@ function get_fileserver_port () {
 
 function get_seafile_data_dir () {
     question="Where would you like to store your seafile data?"
-    note="Please use a volume with enough free space."
+    note="Please use a volume with enough free space." 
     default=${default_seafile_data_dir}
     ask_question "${question} \n\033[33mNote: \033[m${note}" "${default}"
     read seafile_data_dir
@@ -282,19 +283,19 @@ function get_seafile_data_dir () {
             use_existing_seafile="true"
         fi
     elif [[ -d ${seafile_data_dir} && $(ls -A ${seafile_data_dir}) != "" ]]; then
-        echo
+        echo 
         echo "${seafile_data_dir} is an existing non-empty directory. Please specify a different directory"
-        echo
+        echo 
         get_seafile_data_dir
     elif [[ ! ${seafile_data_dir} =~ ^/ ]]; then
-        echo
+        echo 
         echo "\"${seafile_data_dir}\" is not an absolute path. Please specify an absolute path."
-        echo
+        echo 
         get_seafile_data_dir
     elif [[ ! -d $(dirname ${seafile_data_dir}) ]]; then
-        echo
+        echo 
         echo "The path $(dirname ${seafile_data_dir}) does not exist."
-        echo
+        echo 
         get_seafile_data_dir
     fi
     echo
@@ -325,7 +326,7 @@ function copy_user_manuals() {
 }
 
 function parse_params() {
-    while getopts n:i:p:d:a:b:c arg; do
+    while getopts n:i:p:d arg; do
         case $arg in
             n)
                 server_name=${OPTARG}
@@ -338,15 +339,6 @@ function parse_params() {
                 ;;
             d)
                 seafile_data_dir=${OPTARG}
-                ;;
-            a)
-                default_ccnet_conf_dir=${OPTARG}
-                ;;
-            b)
-                default_conf_dir=${OPTARG}
-                ;;
-            c)
-                default_seahub_db=${OPTARG}
                 ;;
         esac
     done
@@ -408,7 +400,7 @@ function usage() {
 }
 
 # -------------------------------------------
-# Main workflow of this script
+# Main workflow of this script 
 # -------------------------------------------
 
 for param in $@; do
@@ -426,12 +418,6 @@ if [[ $# -ge 1 && "$1" == "auto" ]]; then
     validate_params;
     need_pause=0
 fi
-
-echo "----"
-echo "=> ccnet ${default_ccnet_conf_dir}"
-echo "=> conf ${default_conf_dir}"
-echo "=> db ${default_seahub_db}"
-echo "----"
 
 check_sanity;
 if [[ "${need_pause}" == "1" ]]; then
@@ -490,7 +476,7 @@ ccnet_init=${INSTALLPATH}/seafile/bin/ccnet-init
 seaf_server_init=${INSTALLPATH}/seafile/bin/seaf-server-init
 
 # -------------------------------------------
-# Create ccnet conf
+# Create ccnet conf 
 # -------------------------------------------
 if [[ "${use_existing_ccnet}" != "true" ]]; then
     echo "Generating ccnet configuration in ${default_ccnet_conf_dir}..."
@@ -518,11 +504,11 @@ if [[ "${use_existing_seafile}" != "true" ]]; then
          --central-config-dir "${default_conf_dir}" \
          --seafile-dir "${seafile_data_dir}" \
          --fileserver-port ${fileserver_port}; then
-
+        
         echo "Failed to generate seafile configuration"
         err_and_quit;
     fi
-
+    
     echo
 fi
 
@@ -541,7 +527,7 @@ gen_seafdav_conf;
 # -------------------------------------------
 # generate seahub/settings.py
 # -------------------------------------------
-dest_settings_py=${TOPDIR}/conf/seahub_settings.py
+dest_settings_py=${DATADIR}/conf/seahub_settings.py
 seahub_secret_keygen=${INSTALLPATH}/seahub/tools/secret_key_generator.py
 
 if [[ ! -f ${dest_settings_py} ]]; then
@@ -599,7 +585,7 @@ function get_seahub_admin_passwd () {
         get_seahub_admin_passwd;
     fi
 }
-
+    
 # get_seahub_admin_email;
 # sleep .5;
 # get_seahub_admin_passwd;
@@ -625,7 +611,7 @@ function get_seahub_admin_passwd () {
 #         echo "Failed to create seahub admin."
 #         err_and_quit;
 #     fi
-
+    
 #     sql="CREATE TABLE IF NOT EXISTS EmailUser (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT, passwd TEXT, is_staff bool NOT NULL, is_active bool NOT NULL, ctime INTEGER)";
 
 #     if ! sqlite3 "${usermgr_db}" "${sql}" ; then
@@ -633,7 +619,7 @@ function get_seahub_admin_passwd () {
 #         echo "Failed to create seahub admin."
 #         err_and_quit;
 #     fi
-
+    
 #     sql="INSERT INTO EmailUser(email, passwd, is_staff, is_active, ctime) VALUES (\"${seahub_admin_email}\", \"${seahub_admin_passwd_enc}\", 1, 1, 0);"
 
 #     if ! sqlite3 "${usermgr_db}" "${sql}" ; then
@@ -646,7 +632,7 @@ function get_seahub_admin_passwd () {
 echo "Creating seahub database now, it may take one minute, please wait... "
 echo
 
-seahub_db=${TOPDIR}/seahub.db
+seahub_db=${DATADIR}/seahub.db
 seahub_sqls=${INSTALLPATH}/seahub/sql/sqlite3.sql
 
 if ! sqlite3 ${seahub_db} ".read ${seahub_sqls}" 2>/dev/null 1>&2; then
@@ -702,9 +688,9 @@ sleep 1
 
 echo
 echo "-----------------------------------------------------------------"
-echo "Your seafile server configuration has been completed successfully."
+echo "Your seafile server configuration has been completed successfully." 
 echo "-----------------------------------------------------------------"
-echo
+echo 
 echo "run seafile server:     ./seafile.sh { start | stop | restart }"
 echo "run seahub  server:     ./seahub.sh  { start <port> | stop | restart <port> }"
 echo

@@ -4,7 +4,7 @@
   "author": "Seafile Ltd.",
   "description": "file://DESCRIPTION.md",
   "tagline": "Storage for your teams and organizations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "healthCheckPath": "/",
   "httpPort": 80,
   "addons": {

@@ -2,17 +2,17 @@
 
 set -eu -o pipefail
 
-cd /app/code/installed
+cd /app/code/seafile-server-latest
 
 read
 
 # first run
 if ! [ -e  /app/data/data ]; then
-    echo "=> First run creating config directory"
-    # mkdir -p /app/data/conf
+    echo "=> First run create /app/data"
+    mkdir -p /app/data
 
     echo "=> Setup seafile"
-    ./setup-seafile.sh auto -n Seafile -i ${APP_ORIGIN} -d /app/data/data -a /app/data/ccnet -b /app/data/conf -c /app/data/seahub.db
+    ./setup-seafile.sh auto -n Seafile -i ${APP_ORIGIN}
 fi
 
 echo "=> Start seafile"
@@ -22,4 +22,4 @@ echo "=> Start seahub"
 ./seahub.sh start-fastcgi
 
 echo "=> Start nginx"
-nginx -c /app/code/nginx.conf
+nginx
