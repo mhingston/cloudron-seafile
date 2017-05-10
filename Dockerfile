@@ -1,34 +1,20 @@
-FROM cloudron/base:0.3.0
+FROM cloudron/base:0.10.0
 MAINTAINER Seafile Developers <support@cloudron.io>
 
-RUN apt-get update
-RUN apt-get install -y python2.7 python-setuptools python-imaging python-mysqldb python-flup sqlite3
+ENV VERSION="6.0.9"
+ENV TARBALL="seafile-server_${VERSION}_x86-64.tar.gz"
 
-RUN mkdir -p /app/code
+RUN mkdir -p /app/code/installed
 WORKDIR /app/code
 
-ENV VERSION="4.2.1"
-ENV TARBALL="seafile-server_${VERSION}_x86-64.tar.gz"
-ENV SEAFILE_DATA_DIR="/app/data/seafile-data"
-ENV SEAHUB_DATA_DIR="/app/data/seahub-data"
+RUN apt-get update && \
+    apt-get install -y nginx-extras python2.7 libpython2.7 python-setuptools python-imaging python-ldap python-mysqldb python-memcache python-urllib3 && \
+    rm -r /var/cache/apt /var/lib/apt/lists
 
-RUN mkdir -p ${SEAFILE_DATA_DIR}
-RUN mkdir -p ${SEAHUB_DATA_DIR}
+RUN cd /app/code/installed && curl -L https://bintray.com/artifact/download/seafile-org/seafile/${TARBALL} | tar -xz --strip-components 1 -f -
+RUN ln -s /app/data/conf /app/code/conf
 
-# http://manual.seafile.com/deploy/using_mysql.html
-RUN wget https://bitbucket.org/haiwen/seafile/downloads/${TARBALL}
-RUN tar -xzf ${TARBALL}
-RUN mkdir installed
-RUN mv ${TARBALL} installed
+ADD start.sh nginx.conf /app/code/
+ADD setup-seafile.sh /app/code/installed/
 
-EXPOSE 8000
-
-# seafile.sh and seahub.sh want the data folders to be ../ from the code
-# RUN sed -i "s/TOPDIR=.*/TOPDIR=\/app\/data\//" "/app/code/seafile-server-${VERSION}/seafile.sh"
-# RUN sed -i "s/TOPDIR=.*/TOPDIR=\/app\/data\//" "/app/code/seafile-server-${VERSION}/seahub.sh"
-
-ADD create-admin.py /app/code/create-admin.py
-ADD seafile.conf.template /app/code/seafile.conf.template
-ADD start.sh /app/code/start.sh
-
-CMD [ "/app/code/start.sh" ]
+CMD ["/app/code/start.sh"]

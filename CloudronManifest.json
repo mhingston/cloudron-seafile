@@ -1,19 +1,18 @@
 {
-  "id": "com.seafile.cloudronapp",
+  "id": "com.seafile.www",
   "title": "Seafile",
-  "author": "Seafile Developers",
+  "author": "Seafile Ltd.",
   "description": "file://DESCRIPTION.md",
   "tagline": "Storage for your teams and organizations",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "healthCheckPath": "/",
-  "httpPort": 8000,
+  "httpPort": 80,
   "addons": {
     "sendmail": {},
     "localstorage": {},
     "ldap": {}
   },
   "tcpPorts": {},
-  "minBoxVersion": "0.0.1",
   "manifestVersion": 1,
   "website": "https://www.seafile.com",
   "contactEmail": "support@cloudron.io",
